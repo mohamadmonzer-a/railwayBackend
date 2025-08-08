@@ -1,2 +1,7 @@
 fastapi
 uvicorn[standard]
+openai
+supabase
+python-multipart        # for file upload (if uploading via API)
+pypdf                  # or pdfplumber, for PDF text extraction
+python-dotenv          # for environment variable loading (optional)
