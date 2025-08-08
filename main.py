@@ -3,8 +3,16 @@ import os
 import logging
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+# Log environment variables on startup
+@app.on_event("startup")
+async def startup_event():
+    logger.info(f"OPENAI_API_KEY: {'set' if os.getenv('OPENAI_API_KEY') else 'NOT SET'}")
+    logger.info(f"SUPABASE_URL: {'set' if os.getenv('SUPABASE_URL') else 'NOT SET'}")
+    logger.info(f"SUPABASE_SERVICE_ROLE_KEY: {'set' if os.getenv('SUPABASE_SERVICE_ROLE_KEY') else 'NOT SET'}")
 
 @app.get("/check_env/")
 async def check_env():
@@ -12,15 +20,12 @@ async def check_env():
     supabase_url = os.getenv("SUPABASE_URL")
     supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-    logging.info(f"OPENAI_API_KEY: {'set' if openai_key else 'NOT SET'}")
-    logging.info(f"SUPABASE_URL: {'set' if supabase_url else 'NOT SET'}")
-    logging.info(f"SUPABASE_SERVICE_ROLE_KEY: {'set' if supabase_key else 'NOT SET'}")
-
     return {
         "OPENAI_API_KEY": "set" if openai_key else "NOT SET",
         "SUPABASE_URL": "set" if supabase_url else "NOT SET",
         "SUPABASE_SERVICE_ROLE_KEY": "set" if supabase_key else "NOT SET",
     }
+
 
 # from fastapi import FastAPI, UploadFile, File, HTTPException
 # from supabase import create_client, Client
