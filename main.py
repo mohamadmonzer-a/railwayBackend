@@ -7,24 +7,39 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Log environment variables on startup
+# List of relevant env vars to check
+ENV_VARS_TO_CHECK = [
+    "OPENAI_API_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_ANON_KEY",
+    "EMBEDDING_MODEL_NAME",
+
+    # Railway-provided environment variables
+    "RAILWAY_PUBLIC_DOMAIN",
+    "RAILWAY_PRIVATE_DOMAIN",
+    "RAILWAY_PROJECT_NAME",
+    "RAILWAY_ENVIRONMENT_NAME",
+    "RAILWAY_SERVICE_NAME",
+    "RAILWAY_PROJECT_ID",
+    "RAILWAY_ENVIRONMENT_ID",
+    "RAILWAY_SERVICE_ID",
+]
+
 @app.on_event("startup")
 async def startup_event():
-    logger.info(f"OPENAI_API_KEY: {'set' if os.getenv('OPENAI_API_KEY') else 'NOT SET'}")
-    logger.info(f"SUPABASE_URL: {'set' if os.getenv('SUPABASE_URL') else 'NOT SET'}")
-    logger.info(f"SUPABASE_SERVICE_ROLE_KEY: {'set' if os.getenv('SUPABASE_SERVICE_ROLE_KEY') else 'NOT SET'}")
+    logger.info("🔍 Checking environment variables on startup:")
+    for var in ENV_VARS_TO_CHECK:
+        value = os.getenv(var)
+        logger.info(f"{var}: {'set' if value else 'NOT SET'}")
 
 @app.get("/check_env/")
 async def check_env():
-    openai_key = os.getenv("OPENAI_API_KEY")
-    supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    result = {}
+    for var in ENV_VARS_TO_CHECK:
+        result[var] = os.getenv(var) or "NOT SET"
+    return result
 
-    return {
-        "OPENAI_API_KEY": "set" if openai_key else "NOT SET",
-        "SUPABASE_URL": "set" if supabase_url else "NOT SET",
-        "SUPABASE_SERVICE_ROLE_KEY": "set" if supabase_key else "NOT SET",
-    }
 
 
 # from fastapi import FastAPI, UploadFile, File, HTTPException
