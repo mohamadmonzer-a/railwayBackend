@@ -7,6 +7,12 @@ import hashlib
 import logging
 import time
 
+logging.basicConfig(level=logging.INFO)
+
+logging.info(f"OPENAI_API_KEY: {'set' if os.getenv('OPENAI_API_KEY') else 'NOT SET'}")
+logging.info(f"SUPABASE_URL: {'set' if os.getenv('SUPABASE_URL') else 'NOT SET'}")
+logging.info(f"SUPABASE_SERVICE_ROLE_KEY: {'set' if os.getenv('SUPABASE_SERVICE_ROLE_KEY') else 'NOT SET'}")
+
 app = FastAPI()
 
 # Load environment variables (optional if you use os.environ directly)
